@@ -39,6 +39,7 @@ class Tile {
 	int getNumber() const { return number; }
 	int getColor() const { return color; }
 	void print();
+	Tile( int n, int c ) { number = n; color = c; }
 };
 
 bool operator<(const Tile &s1, const Tile &s2);

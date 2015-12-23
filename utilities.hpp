@@ -39,3 +39,36 @@ vector<T> onlyBlues( const vector<T>& tiles ) {
 	return keepIf( isBlue, tiles );
 }
 
+template<typename T>
+vector<T> onlyPurples( const vector<T>& tiles ) {
+	return keepIf( isPurple, tiles );
+}
+
+template<typename T>
+vector<T> onlyReds( const vector<T>& tiles ) {
+	return keepIf( isRed, tiles );
+}
+
+template<typename T>
+vector<T> onlyYellows( const vector<T>& tiles ) {
+	return keepIf( isYellow, tiles );
+}
+
+vector<vector<Tile>> findGroups( vector<Tile> tiles ) {
+	vector<vector<Tile>> result;
+	return result;
+}
+
+vector<Tile> generateAllTiles() {
+	vector<Tile> result;
+	for( int i = 1; i <= 4; i++ ) {
+		for( int j = 1; j <= 13; j++ ) {
+			Tile t1 = Tile( j, i );
+			result.push_back( t1 );
+			Tile t2 = Tile( j, i );
+			result.push_back( t2 );
+		}
+	}
+	return result;
+}
+

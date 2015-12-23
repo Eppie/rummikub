@@ -21,23 +21,6 @@
 #include <vector>
 #include <algorithm>
 
-vector<Tile> generateAllTiles() {
-	vector<Tile> result;
-	for( int i = 1; i <= 4; i++ ) {
-		for( int j = 1; j <= 13; j++ ) {
-			Tile t1 = Tile();
-			t1.setColor( i );
-			t1.setNumber( j );
-			result.push_back( t1 );
-			Tile t2 = Tile();
-			t2.setColor( i );
-			t2.setNumber( j );
-			result.push_back( t2 );
-		}
-	}
-	return result;
-}
-
 template<typename T>
 void shuffle( T iterable ) {
 	random_shuffle( iterable->begin(), iterable->end() );
