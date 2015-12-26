@@ -17,7 +17,6 @@
  */
 
 #include "Tile.hpp"
-#include <tuple>
 
 void Tile::print() {
 	if( color == 1 ) {
@@ -33,7 +32,7 @@ void Tile::print() {
 	cout << number << NONE << endl;
 }
 
-bool operator<(const Tile &t1, const Tile &t2) {
+bool operator<( const Tile &t1, const Tile &t2 ) {
 	if( t1.getColor() != t2.getColor() ) {
 		return t1.getColor() < t2.getColor();
 	} else {

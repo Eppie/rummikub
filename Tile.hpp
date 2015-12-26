@@ -33,14 +33,25 @@ enum color {
 class Tile {
 	int number;
 	int color;
-	public:
-	void setNumber( int n ) { number = n; }
-	void setColor( int c ) { color = c; }
-	int getNumber() const { return number; }
-	int getColor() const { return color; }
+public:
+	void setNumber( int n ) {
+		number = n;
+	}
+	void setColor( int c ) {
+		color = c;
+	}
+	int getNumber() const {
+		return number;
+	}
+	int getColor() const {
+		return color;
+	}
 	void print();
-	Tile( int n, int c ) { number = n; color = c; }
+	Tile( int n, int c ) {
+		number = n;
+		color = c;
+	}
 };
 
-bool operator<(const Tile &s1, const Tile &s2);
+bool operator<( const Tile &s1, const Tile &s2 );
 

@@ -28,10 +28,12 @@ void shuffle( T iterable ) {
 
 vector<Tile> drawHand( vector<Tile>* allTiles ) {
 	vector<Tile> result;
+
 	for( int i = 0; i < 14; i++ ) {
 		result.push_back( allTiles->back() );
 		allTiles->pop_back();
 	}
+
 	sort( result.begin(), result.end() );
 	return result;
 }
@@ -40,10 +42,9 @@ int main() {
 	srand( time( NULL ) );
 	vector<Tile> allTiles = generateAllTiles();
 	shuffle( &allTiles );
-
 	vector<Tile> myHand = drawHand( &allTiles );
-
 	cout << "My hand:" << endl;
+
 	for( auto t : myHand ) {
 		t.print();
 	}
@@ -51,6 +52,7 @@ int main() {
 	cout << "Remaining blues:" << endl;
 	sort( allTiles.begin(), allTiles.end() );
 	auto blues = onlyBlues( allTiles );
+
 	for( auto t : blues ) {
 		t.print();
 	}
