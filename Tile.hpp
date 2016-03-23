@@ -53,5 +53,11 @@ public:
 	}
 };
 
-bool operator<( const Tile &s1, const Tile &s2 );
+bool operator<( const Tile &t1, const Tile &t2 ) {
+	if( t1.getColor() != t2.getColor() ) {
+		return t1.getColor() < t2.getColor();
+	} else {
+		return t1.getNumber() < t2.getNumber();
+	}
+}
 

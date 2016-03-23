@@ -26,18 +26,6 @@ void shuffle( T iterable ) {
 	random_shuffle( iterable->begin(), iterable->end() );
 }
 
-vector<Tile> drawHand( vector<Tile>* allTiles ) {
-	vector<Tile> result;
-
-	for( int i = 0; i < 14; i++ ) {
-		result.push_back( allTiles->back() );
-		allTiles->pop_back();
-	}
-
-	sort( result.begin(), result.end() );
-	return result;
-}
-
 int main() {
 	srand( time( NULL ) );
 	vector<Tile> allTiles = generateAllTiles();
@@ -45,16 +33,12 @@ int main() {
 	vector<Tile> myHand = drawHand( &allTiles );
 	cout << "My hand:" << endl;
 
-	for( auto t : myHand ) {
-		t.print();
-	}
-
-	cout << "Remaining blues:" << endl;
-	sort( allTiles.begin(), allTiles.end() );
-	auto blues = onlyBlues( allTiles );
-
-	for( auto t : blues ) {
-		t.print();
+	auto runs = findRuns( myHand );
+	for( auto run : runs ) {
+		for( auto tile : run ) {
+			tile.print();
+		}
+		cout << endl;
 	}
 
 	return 0;

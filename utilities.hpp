@@ -68,7 +68,16 @@ vector<vector<Tile>> findGroups( vector<Tile> tiles ) {
 }
 
 vector<vector<Tile>> findRuns( vector<Tile> tiles ) {
-	vector<vector<Tile>> result;
+	vector<vector<Tile>> result( 1, vector<Tile>( 1, tiles[0] ) );
+
+	for_each( tiles.begin() + 1, tiles.end(), [&](Tile i) {
+		if( result.back().back().getNumber() == i.getNumber() - 1 ) {
+			result.back().push_back(i);
+		} else {
+			result.push_back( vector<Tile>( 1, i ) );
+		}
+	} );
+
 	return result;
 }
 
@@ -84,6 +93,18 @@ vector<Tile> generateAllTiles() {
 		}
 	}
 
+	return result;
+}
+
+vector<Tile> drawHand( vector<Tile>* allTiles ) {
+	vector<Tile> result;
+
+	for( int i = 0; i < 14; i++ ) {
+		result.push_back( allTiles->back() );
+		allTiles->pop_back();
+	}
+
+	sort( result.begin(), result.end() );
 	return result;
 }
 
