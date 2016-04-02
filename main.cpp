@@ -18,16 +18,11 @@
 
 #include "Tile.cpp"
 #include "utilities.hpp"
-#include <vector>
 #include <algorithm>
-
-template<typename T>
-void shuffle( T iterable ) {
-	random_shuffle( iterable->begin(), iterable->end() );
-}
+#include <vector>
 
 int main() {
-	srand( time( NULL ) );
+	srand( time( nullptr ) );
 	vector<Tile> allTiles = generateAllTiles();
 	shuffle( &allTiles );
 	vector<Tile> myHand = drawHand( &allTiles );
@@ -35,6 +30,7 @@ int main() {
 
 	auto runs = findRuns( myHand );
 	for( auto run : runs ) {
+		cout << isValidRun( run ) << ": ";
 		for( auto tile : run ) {
 			tile.print();
 		}

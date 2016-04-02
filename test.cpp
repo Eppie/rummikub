@@ -17,7 +17,7 @@
  */
 
 #include "utilities.hpp"
-#include <assert.h>
+#include <cassert>
 
 vector<Tile> allTiles = generateAllTiles();
 
