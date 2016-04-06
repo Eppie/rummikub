@@ -11,7 +11,6 @@
  *       Compiler:  g++
  *
  *         Author:  Andrew Epstein
- *   Organization:  SevOne
  *
  * =====================================================================================
  */
@@ -32,3 +31,12 @@ void Tile::print() {
 	cout << number << " " << NONE;
 }
 
+bool Tile::operator==( const Tile &other ) {
+	if( this->getColor() != other.getColor() ) {
+		return false;
+	} else if( this->getNumber() != other.getNumber() ) {
+		return false;
+	}
+
+	return true;
+}

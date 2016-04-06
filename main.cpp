@@ -11,13 +11,14 @@
  *       Compiler:  g++
  *
  *         Author:  Andrew Epstein
- *   Organization:  SevOne
  *
  * =====================================================================================
  */
 
 #include "Tile.cpp"
 #include "utilities.hpp"
+#include "groups.hpp"
+#include "runs.hpp"
 #include <algorithm>
 #include <vector>
 
@@ -29,11 +30,14 @@ int main() {
 	cout << "My hand:" << endl;
 
 	auto runs = findRuns( myHand );
+
 	for( auto run : runs ) {
 		cout << isValidRun( run ) << ": ";
+
 		for( auto tile : run ) {
 			tile.print();
 		}
+
 		cout << endl;
 	}
 

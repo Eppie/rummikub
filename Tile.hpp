@@ -46,6 +46,7 @@ public:
 		return color;
 	}
 	void print();
+	bool operator==( const Tile &other );
 	Tile( int n, int c ) {
 		number = n;
 		color = c;
