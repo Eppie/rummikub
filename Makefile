@@ -4,8 +4,14 @@ CXXFLAGS=-march=native -mtune=native -std=c++14 -g -Ofast
 all:
 	$(CXX) $(CXXFLAGS) main.cpp -o rummikub
 
-test:
-	$(CXX) $(CXXFLAGS) test.cpp -o test
+test: test.o Tile.o
+	$(CXX) $(CXXFLAGS) test.o Tile.o -o test
+
+test.o: test.cpp Board.hpp Tile.hpp utilities.hpp groups.hpp runs.hpp
+	$(CXX) $(CXXFLAGS) -c test.cpp -o test.o
+
+Tile.o: Tile.cpp Tile.hpp color.h
+	$(CXX) $(CXXFLAGS) -c Tile.cpp -o Tile.o
 
 client:
 	$(CXX) $(CXXFLAGS) client.cpp -o client
@@ -14,5 +20,4 @@ server:
 	$(CXX) $(CXXFLAGS) server.cpp -o server
 
 clean:
-	rm -f rummikub test client server
-
+	rm -f rummikub test client server test.o Tile.o
