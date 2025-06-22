@@ -5,6 +5,7 @@
 #include <map>       // For grouping by color in findRuns
 #include <set>       // To avoid duplicate sets if any
 #include "GameTypes.hpp" // For GameSet, SetType, and it pulls in Tile.hpp, runs.hpp, groups.hpp
+#include "PerformanceTracer.hpp" // For performance tracing
 
 // Note: runs.hpp, groups.hpp, Tile.hpp are already included by GameTypes.hpp.
 // Explicitly including them here is redundant but harmless due to include guards.
@@ -168,6 +169,7 @@ std::vector<GameSet> findAllValidGroups(std::vector<Tile> tiles) {
 // However, findRuns/findGroups already take by value, which makes a copy.
 // So, find_all_possible_sets can just pass its const& argument.
 std::vector<GameSet> find_all_possible_sets(const std::vector<Tile>& input_tiles) {
+    TRACE_FUNCTION();
     std::vector<GameSet> all_sets;
 
     // Pass input_tiles (const ref). The by-value parameters in the helper functions
