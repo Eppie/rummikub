@@ -45,19 +45,14 @@ public:
 	int getColor() const {
 		return color;
 	}
-	void print();
-	bool operator==( const Tile &other );
+	void print() const;
+	bool operator==( const Tile &other ) const;
 	Tile( int n, int c ) {
 		number = n;
 		color = c;
 	}
 };
 
-bool operator<( const Tile &t1, const Tile &t2 ) {
-	if( t1.getColor() != t2.getColor() ) {
-		return t1.getColor() < t2.getColor();
-	} else {
-		return t1.getNumber() < t2.getNumber();
-	}
-}
+// Ensure only the declaration of operator< is here
+bool operator<( const Tile &t1, const Tile &t2 );
 
