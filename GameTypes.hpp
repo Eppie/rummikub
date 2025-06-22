@@ -8,6 +8,7 @@
 #include "Tile.hpp"
 #include "runs.hpp"   // For isValidRun
 #include "groups.hpp" // For isValidGroup
+#include "PerformanceTracer.hpp" // For performance tracing
 // utilities.hpp might be needed if GameSet used functions from it, currently doesn't seem to.
 // However, isValidRun/isValidGroup from runs.hpp/groups.hpp *do* include utilities.hpp.
 
@@ -26,6 +27,7 @@ public:
     }
 
     bool isValid() const {
+        TRACE_FUNCTION();
         if (tiles.empty()) {
             return false;
         }

@@ -7,6 +7,7 @@
 #include "GameTypes.hpp" // Defines GameSet, SetType
 #include "utilities.hpp" // For sorting tiles if necessary within sets, and other board utilities
 #include "SetFinder.hpp" // For find_all_possible_sets
+#include "PerformanceTracer.hpp" // For performance tracing
 
 // class Tile; // Forward declaration no longer needed if GameTypes pulls it.
 
@@ -66,6 +67,7 @@ public:
 
     // Checks if all sets on the board are valid and all tiles are unique across sets.
     bool isValidBoard() const {
+        TRACE_FUNCTION();
         if (sets.empty()) {
             return true; // An empty board is considered valid.
         }
@@ -102,6 +104,7 @@ public:
 // Function to check if a collection of sets represents a valid board state.
 // This is useful for validating potential new board configurations before committing them.
 inline bool is_board_valid(const std::vector<GameSet>& board_sets) {
+    TRACE_FUNCTION();
     if (board_sets.empty()) {
         return true; // An empty collection of sets is valid.
     }
@@ -124,6 +127,7 @@ bool find_valid_arrangement_recursive(
     std::set<Tile>& used_tiles_from_add_pool, // Tracks which of original_tiles_to_add_set are in current_arrangement
     size_t total_tiles_to_place // The total number of tiles in the initial combined pool
 ) {
+    TRACE_FUNCTION();
     // Base Case 1: All tiles from the initial combined pool have been placed into sets
     if (current_pool_tiles.empty()) {
         // Check if all *specific* tiles from tiles_to_add were used
@@ -202,6 +206,7 @@ inline BoardState can_add_tiles_to_board(
     const BoardState& current_board_state,
     const std::vector<Tile>& tiles_to_add
 ) {
+    TRACE_FUNCTION();
     // Step 1: Combine tiles
     std::vector<Tile> current_board_tiles = current_board_state.getAllTiles();
     std::vector<Tile> combined_pool = current_board_tiles;
