@@ -4,10 +4,11 @@
 #include <algorithm> // For sort, next_permutation
 #include <map>       // For grouping by color in findRuns
 #include <set>       // To avoid duplicate sets if any
-#include "Board.hpp"    // For GameSet, SetType
-#include "runs.hpp"     // For existing findRuns (to be adapted/reused)
-#include "groups.hpp"   // For existing findGroups (to be completed)
-#include "Tile.hpp"     // For Tile
+#include "GameTypes.hpp" // For GameSet, SetType, and it pulls in Tile.hpp, runs.hpp, groups.hpp
+
+// Note: runs.hpp, groups.hpp, Tile.hpp are already included by GameTypes.hpp.
+// Explicitly including them here is redundant but harmless due to include guards.
+// For cleanliness, they are removed as GameTypes.hpp is the primary source for these types now.
 
 // --- Forward declarations or include completed versions ---
 // Assuming findRuns and findGroups will be refactored or new versions created.
