@@ -3,6 +3,7 @@
 #include <vector>
 #include <numeric> // For std::accumulate if needed for printing or IDs
 #include <algorithm> // For std::all_of, std::sort, etc.
+#include <optional>  // For std::optional
 // Tile.hpp, runs.hpp, groups.hpp are now included via GameTypes.hpp
 #include "GameTypes.hpp" // Defines GameSet, SetType
 #include "utilities.hpp" // For sorting tiles if necessary within sets, and other board utilities
@@ -10,6 +11,7 @@
 #include "PerformanceTracer.hpp" // For performance tracing
 
 // class Tile; // Forward declaration no longer needed if GameTypes pulls it.
+// GameTypes.hpp already includes <optional> but being explicit here is fine.
 
 
 class BoardState {
@@ -200,9 +202,9 @@ bool find_valid_arrangement_recursive(
 
 
 // Main function to implement the logic for adding tiles to the board.
-// Returns a new BoardState if tiles can be added successfully,
-// otherwise returns the original current_board_state.
-inline BoardState can_add_tiles_to_board(
+// Returns an std::optional<BoardState>. Contains a new BoardState if tiles can be added successfully
+// and a valid board is formed, otherwise std::nullopt.
+inline std::optional<BoardState> can_add_tiles_to_board(
     const BoardState& current_board_state,
     const std::vector<Tile>& tiles_to_add
 ) {
@@ -217,11 +219,14 @@ inline BoardState can_add_tiles_to_board(
     if (tiles_to_add.empty()) {
         // If the current board is valid, return it. Otherwise, it's an interesting case.
         // The problem implies we are trying to make a *new* valid board.
-        // If tiles_to_add is empty, the "new" board is just the current board.
-        // If current board is already valid, this is fine.
-        // If current board is NOT valid, and we add no tiles, we can't make it valid.
-        // The prompt says "return the original current_board_state" if a new one isn't found.
-        return current_board_state;
+    // If tiles_to_add is empty, no change can be made that involves adding new tiles.
+    // The function's purpose is to see if *tiles_to_add* can be incorporated.
+    // If tiles_to_add is empty, arguably no "new" state incorporating them can be formed.
+    // Depending on interpretation, one might return current_board_state if it's valid,
+    // or always nullopt if tiles_to_add is empty because no *new* tiles were placed.
+    // For find_best_move, if tiles_to_add is empty, it means trying to play 0 tiles,
+    // which shouldn't result in a "successful" move. So, returning nullopt is better.
+    return std::nullopt;
     }
 
     // Ensure tiles_to_add does not contain duplicates not reflected in combined_pool count
@@ -269,14 +274,43 @@ inline BoardState can_add_tiles_to_board(
                  }
 
                 if(all_physically_added_tiles_present) {
-                    return BoardState(result_sets);
+                    return BoardState(result_sets); // Implicitly constructs std::optional<BoardState>
                 }
             }
         }
     }
 
-    // If no solution found, return the original board state
-    return current_board_state;
+    // If no solution found, return std::nullopt
+    return std::nullopt;
 }
 
 } // namespace BoardManipulation
+
+
+// Structure to represent a game move
+// Defined here because it uses BoardState, and BoardState uses GameSet (from GameTypes.hpp)
+// GameTypes.hpp is included at the top of this file.
+struct Move {
+    BoardState new_board_state;
+    std::vector<Tile> remaining_hand;
+    int tiles_played_count;
+
+    // Constructor
+    Move(const BoardState& board_state, const std::vector<Tile>& hand, int played_count)
+        : new_board_state(board_state), remaining_hand(hand), tiles_played_count(played_count) {}
+
+    // For debugging or logging
+    void print() const {
+        std::cout << "Move: Played " << tiles_played_count << " tiles." << std::endl;
+        std::cout << "Remaining Hand Size: " << remaining_hand.size() << std::endl;
+        // Optionally print board state if needed, but can be verbose
+        // new_board_state.print();
+    }
+
+    // Equality operator for testing
+    bool operator==(const Move& other) const {
+        return new_board_state == other.new_board_state &&
+               remaining_hand == other.remaining_hand &&
+               tiles_played_count == other.tiles_played_count;
+    }
+};

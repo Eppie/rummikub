@@ -9,8 +9,11 @@
 #include "runs.hpp"   // For isValidRun
 #include "groups.hpp" // For isValidGroup
 #include "PerformanceTracer.hpp" // For performance tracing
+#include <optional> // For std::optional - though Move struct will be relocated
 // utilities.hpp might be needed if GameSet used functions from it, currently doesn't seem to.
 // However, isValidRun/isValidGroup from runs.hpp/groups.hpp *do* include utilities.hpp.
+
+// BoardState forward declaration removed as Move struct is being relocated.
 
 enum class SetType {
     RUN,
@@ -62,3 +65,6 @@ public:
         return tiles < other.tiles; // Relies on Tile::operator< and sorted tiles
     }
 };
+
+// Move struct definition removed from here. It will be placed in Board.hpp
+// after BoardState is fully defined.
