@@ -1,2 +1,5 @@
 rummikub
 tags
+*.o
+*.dSYM
+test
