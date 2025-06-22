@@ -297,6 +297,214 @@ void testIsValidBoard() {
     std::cout << "--- BoardState::isValidBoard Tests Passed ---" << std::endl;
 }
 
+void testIsBoardValidFunction() {
+    std::cout << "\n--- Testing is_board_valid (free function) ---" << std::endl;
+
+    Tile r1(1,red), r2(2,red), r3(3,red), r4(4,red);
+    Tile b3(3,blue), y3(3,yellow); // p3 is purple, defined in Tile.hpp's enum
+    Tile p3_tile(3, purple); // Using the enum name directly
+
+    GameSet valid_run({r1,r2,r3}, SetType::RUN);         // R1 R2 R3
+    GameSet valid_group({r4,Tile(4,blue),Tile(4,yellow)}, SetType::GROUP); // R4 B4 Y4
+    GameSet invalid_set_short_run({r1,r2}, SetType::RUN); // Invalid run (too short)
+    GameSet group_with_r1({r1, Tile(1,blue), Tile(1,yellow)}, SetType::GROUP); // R1 B1 Y1 - valid on its own
+
+    // Test Case 1: Empty vector of sets
+    std::vector<GameSet> empty_sets;
+    assert(is_board_valid(empty_sets));
+    std::cout << "TC1 Empty vector of sets: Passed" << std::endl;
+
+    // Test Case 2: All valid sets and unique tiles
+    std::vector<GameSet> valid_board_sets = {valid_run, valid_group};
+    assert(is_board_valid(valid_board_sets));
+    std::cout << "TC2 All valid sets, unique tiles: Passed" << std::endl;
+
+    // Test Case 3: Contains an invalid set
+    std::vector<GameSet> board_with_invalid_set = {valid_run, invalid_set_short_run};
+    assert(!is_board_valid(board_with_invalid_set));
+    std::cout << "TC3 Contains an invalid set: Passed" << std::endl;
+
+    // Test Case 4: All valid sets but with duplicate tiles
+    // valid_run contains R1, group_with_r1 also contains R1.
+    std::vector<GameSet> board_with_duplicate_tiles = {valid_run, group_with_r1};
+    assert(valid_run.isValid()); // Sanity check
+    assert(group_with_r1.isValid()); // Sanity check
+    assert(!is_board_valid(board_with_duplicate_tiles));
+    std::cout << "TC4 Valid sets, but duplicate tiles: Passed" << std::endl;
+
+    // Test Case 5: Single valid set
+    std::vector<GameSet> single_valid_set = {valid_run};
+    assert(is_board_valid(single_valid_set));
+    std::cout << "TC5 Single valid set: Passed" << std::endl;
+
+    // Test Case 6: Single invalid set
+    std::vector<GameSet> single_invalid_set = {invalid_set_short_run};
+    assert(!is_board_valid(single_invalid_set));
+    std::cout << "TC6 Single invalid set: Passed" << std::endl;
+
+
+    std::cout << "--- is_board_valid (free function) Tests Passed ---" << std::endl;
+}
+
+// Helper to compare BoardState objects for testing can_add_tiles_to_board
+// This is tricky because the order of sets might not be guaranteed.
+// A robust check would sort the sets within each BoardState before comparison,
+// or count occurrences of each unique set.
+// For now, we'll sort the sets vector before comparison.
+bool areBoardStatesEquivalent(BoardState bs1, BoardState bs2) {
+    // First, check if both boards are valid according to their own rules.
+    // (This is more of a sanity check on the test inputs/outputs if they are expected to be valid)
+    // assert(bs1.isValidBoard());
+    // assert(bs2.isValidBoard());
+
+    if (bs1.sets.size() != bs2.sets.size()) {
+        return false;
+    }
+    // Sort sets for comparison
+    std::sort(bs1.sets.begin(), bs1.sets.end());
+    std::sort(bs2.sets.begin(), bs2.sets.end());
+    return bs1.sets == bs2.sets;
+}
+
+
+void testCanAddTilesToBoard() {
+    std::cout << "\n--- Testing can_add_tiles_to_board ---" << std::endl;
+
+    // Define some tiles for testing
+    Tile r1(1,red), r2(2,red), r3(3,red), r4(4,red), r5(5,red), r6(6,red);
+    Tile b1(1,blue), b2(2,blue), b3(3,blue), b4(4,blue);
+    Tile y1(1,yellow), y2(2,yellow), y3(3,yellow), y4(4,yellow), y5(5,yellow); // Added y5 definition
+    Tile p1(1,purple), p2(2,purple), p3(3,purple), p4(4,purple);
+
+    // Test Case 1: Empty board, add tiles that form a valid set
+    BoardState empty_board;
+    std::vector<Tile> tiles_to_add_1 = {r1, r2, r3};
+    BoardState expected_board_1_sets;
+    expected_board_1_sets.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    BoardState result_board_1 = BoardManipulation::can_add_tiles_to_board(empty_board, tiles_to_add_1);
+    assert(areBoardStatesEquivalent(result_board_1, expected_board_1_sets));
+    std::cout << "TC1 Empty board, add valid set: Passed" << std::endl;
+
+    // Test Case 2: Empty board, add tiles that cannot form any valid set
+    std::vector<Tile> tiles_to_add_2 = {r1, r2}; // Not enough for a run
+    BoardState result_board_2 = BoardManipulation::can_add_tiles_to_board(empty_board, tiles_to_add_2);
+    assert(areBoardStatesEquivalent(result_board_2, empty_board)); // Should return original empty board
+    std::cout << "TC2 Empty board, add invalid set: Passed" << std::endl;
+
+    // Test Case 3: Existing board, add tiles that form a new, separate valid set
+    BoardState board_3;
+    board_3.addSet(GameSet({b1,b2,b3}, SetType::RUN)); // B1,B2,B3
+    std::vector<Tile> tiles_to_add_3 = {r1, r2, r3};   // R1,R2,R3
+    BoardState expected_board_3_sets;
+    expected_board_3_sets.addSet(GameSet({b1,b2,b3}, SetType::RUN));
+    expected_board_3_sets.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    BoardState result_board_3 = BoardManipulation::can_add_tiles_to_board(board_3, tiles_to_add_3);
+    assert(areBoardStatesEquivalent(result_board_3, expected_board_3_sets));
+    std::cout << "TC3 Existing board, add separate valid set: Passed" << std::endl;
+
+    // Test Case 4: Existing board, add tiles that cannot be legally placed
+    BoardState board_4; // Board has B1,B2,B3
+    board_4.addSet(GameSet({b1,b2,b3}, SetType::RUN));
+    std::vector<Tile> tiles_to_add_4 = {r1, r2}; // Try to add R1,R2 (invalid set)
+    BoardState result_board_4 = BoardManipulation::can_add_tiles_to_board(board_4, tiles_to_add_4);
+    assert(areBoardStatesEquivalent(result_board_4, board_4)); // Should return original board
+    std::cout << "TC4 Existing board, add tiles that cannot be placed: Passed" << std::endl;
+
+    // Test Case 5: Add tiles that complete an existing set (conceptually, though current logic rebuilds)
+    // Board has R1, R2. Add R3. Expected: R1,R2,R3
+    BoardState board_5;
+    board_5.addSet(GameSet({r1,r2,r3}, SetType::RUN)); // Start with R1,R2,R3 for simplicity, then try to "add" R4
+                                                      // The function will combine all and try to rebuild.
+                                                      // Let's make a board that can be extended.
+    BoardState current_board_5; // Empty for now.
+    // We want to test if {R1,R2} + {R3} -> {R1,R2,R3}
+    // But the setup requires the current board to be valid.
+    // Let's test breaking and reforming.
+    // Board: {R1,R2,R3}, {B1,B2,B3}. Add: R4.
+    // Expected: {R1,R2,R3,R4}, {B1,B2,B3}
+    BoardState board_for_5;
+    board_for_5.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    board_for_5.addSet(GameSet({b1,b2,b3}, SetType::RUN));
+    std::vector<Tile> tiles_to_add_5 = {r4}; // Add R4
+    BoardState expected_board_5_sets;
+    expected_board_5_sets.addSet(GameSet({r1,r2,r3,r4}, SetType::RUN));
+    expected_board_5_sets.addSet(GameSet({b1,b2,b3}, SetType::RUN));
+    BoardState result_board_5 = BoardManipulation::can_add_tiles_to_board(board_for_5, tiles_to_add_5);
+    result_board_5.print();
+    expected_board_5_sets.print();
+    assert(areBoardStatesEquivalent(result_board_5, expected_board_5_sets));
+    std::cout << "TC5 Add tile that extends an existing run (via rebuild): Passed" << std::endl;
+
+
+    // Test Case 6: Add tiles requiring breaking and reforming multiple sets
+    // Board: {R1,R2,R3}, {R4,B4,Y4}. Add: R5,R6.
+    // Expected: {R1,R2,R3,R4,R5,R6}, {B4,Y4} (no, B4,Y4 is not valid)
+    // Expected: {R1,R2,R3,R4,R5,R6} and B4, Y4 are left over, so this should fail if B4,Y4 cannot form new set
+    // Let's try: Board: {R1,R2,R3}, {B4,Y4,P4}. Add: R4.
+    // Expected: {R1,R2,R3,R4}, {B4,Y4,P4}. (Similar to TC5, but R4 is taken from a group)
+    BoardState board_for_6;
+    board_for_6.addSet(GameSet({b1,b2,b3}, SetType::RUN)); // B1,B2,B3
+    board_for_6.addSet(GameSet({r4,y4,p4}, SetType::GROUP)); // R4,Y4,P4
+    std::vector<Tile> tiles_to_add_6 = {r1,r2,r3}; // Add R1,R2,R3. R4 is on board.
+                                                // Combined: B1,B2,B3, R4,Y4,P4, R1,R2,R3
+                                                // Expected: {B1,B2,B3}, {Y4,P4,r4}, {R1,R2,R3} - no, this is not right.
+                                                // Expected: {B1,B2,B3}, {R1,R2,R3,R4}, {Y4,P4} (Y4,P4 is not valid) -> fail
+                                                // The goal is to use R1,R2,R3.
+                                                // Pool: B1,B2,B3, R4,Y4,P4, R1,R2,R3.
+                                                // Possible new arrangement: {B1,B2,B3}, {R1,R2,R3}, {R4,Y4,P4}. This is a valid new board.
+                                                // This is like TC3.
+
+    // Let's try a real break/reform:
+    // Board: {R1,R2,R3,R4}, {Y5,Y6,Y7}. Add: B4, P4.
+    // Pool: R1,R2,R3,R4, Y5,Y6,Y7, B4, P4.
+    // Added tiles B4, P4 must be used.
+    // New sets: {R1,R2,R3}, {R4,B4,P4}, {Y5,Y6,Y7}. This is a valid recombination.
+    BoardState board_6_current;
+    board_6_current.addSet(GameSet({r1,r2,r3,r4}, SetType::RUN)); // R1,R2,R3,R4
+    board_6_current.addSet(GameSet({y5,Tile(6,yellow),Tile(7,yellow)}, SetType::RUN)); // Y5,Y6,Y7
+    std::vector<Tile> tiles_to_add_6_real = {b4, p4}; // Add B4, P4
+
+    BoardState expected_board_6_sets;
+    expected_board_6_sets.addSet(GameSet({r1,r2,r3}, SetType::RUN)); // R1,R2,R3
+    expected_board_6_sets.addSet(GameSet({r4,b4,p4}, SetType::GROUP)); // R4,B4,P4
+    expected_board_6_sets.addSet(GameSet({y5,Tile(6,yellow),Tile(7,yellow)}, SetType::RUN)); // Y5,Y6,Y7
+
+    BoardState result_board_6 = BoardManipulation::can_add_tiles_to_board(board_6_current, tiles_to_add_6_real);
+    result_board_6.print();
+    expected_board_6_sets.print();
+    assert(areBoardStatesEquivalent(result_board_6, expected_board_6_sets));
+    std::cout << "TC6 Add tiles requiring break and reform: Passed" << std::endl;
+
+    // Test Case 7: Tiles cannot be legally added (results in original board)
+    // Board: {R1,R2,R3}. Add: B1, B2. (B1,B2 cannot form a set, existing set is untouched)
+    BoardState board_7_current;
+    board_7_current.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    std::vector<Tile> tiles_to_add_7 = {b1,b2};
+    BoardState result_board_7 = BoardManipulation::can_add_tiles_to_board(board_7_current, tiles_to_add_7);
+    assert(areBoardStatesEquivalent(result_board_7, board_7_current));
+    std::cout << "TC7 Add tiles that cannot be legally placed (partial set): Passed" << std::endl;
+
+    // Test Case 8: Empty tiles_to_add (should return original board)
+    BoardState board_8_current;
+    board_8_current.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    std::vector<Tile> tiles_to_add_8 = {}; // Empty
+    BoardState result_board_8 = BoardManipulation::can_add_tiles_to_board(board_8_current, tiles_to_add_8);
+    assert(areBoardStatesEquivalent(result_board_8, board_8_current));
+    std::cout << "TC8 Empty tiles_to_add: Passed" << std::endl;
+
+    // Test Case 9: Adding tiles that *must* be used but cannot be part of a full valid board
+    // Board: {R1,R2,R3}. Add: B4. (B4 cannot form any set with R1,R2,R3 and itself)
+    BoardState board_9_current;
+    board_9_current.addSet(GameSet({r1,r2,r3}, SetType::RUN));
+    std::vector<Tile> tiles_to_add_9 = {b4};
+    BoardState result_board_9 = BoardManipulation::can_add_tiles_to_board(board_9_current, tiles_to_add_9);
+    assert(areBoardStatesEquivalent(result_board_9, board_9_current));
+    std::cout << "TC9 Added tile must be used but cannot complete a board: Passed" << std::endl;
+
+
+    std::cout << "--- can_add_tiles_to_board Tests Passed (Initial Set) ---" << std::endl;
+}
+
 
 // Original main function modified to include all tests
 int main() {
@@ -308,6 +516,10 @@ int main() {
 	testSetFinder();
     std::cout << "\nAttempting to run isValidBoard tests..." << std::endl; // Debug print
     testIsValidBoard();
+    std::cout << "\nAttempting to run is_board_valid (free function) tests..." << std::endl;
+    testIsBoardValidFunction();
+    std::cout << "\nAttempting to run can_add_tiles_to_board tests..." << std::endl;
+    testCanAddTilesToBoard();
 
 	return 0;
 }
